@@ -1,0 +1,11 @@
+<?php
+
+namespace Spork\Shopping\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class ShoppingList extends Model
+{
+    use HasFactory;
+}
