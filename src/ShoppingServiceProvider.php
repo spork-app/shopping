@@ -10,8 +10,10 @@ class ShoppingServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        Spork::addFeature('shopping', 'ShoppingCartIcon', '/shopping');
+        Spork::addFeature('shopping', 'ShoppingCartIcon', '/shopping', 'tool');
 
-        Route::prefix('api')->group(__DIR__ . '/../routes/api.php');
+        if (config('spork.shopping.enabled')) {
+            Route::prefix('api')->group(__DIR__ . '/../routes/api.php');
+        }
     }
 }

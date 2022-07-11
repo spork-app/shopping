@@ -62,7 +62,7 @@ class MeijerItemService
         }
 
 
-        $response = cache()->remember('meijer-query.'.$itemName.'.'.$page, now()->addDays(7), fn () => Http::get(sprintf(self::API_URL, $itemName, $page, $primaryStore))->json());
+        $response = cache()->remember('meijer-query.'.$itemName.'.'.$page, now()->addHour(), fn () => Http::get(sprintf(self::API_URL, $itemName, $page, $primaryStore))->json());
 
         $data = Arr::get($response, 'response.results');
         $total = Arr::get($response, 'response.total_num_results');
