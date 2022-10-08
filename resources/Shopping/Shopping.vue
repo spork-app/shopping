@@ -9,7 +9,7 @@
 
 <script>
 import {CreditCardIcon, HomeIcon, ShoppingCartIcon} from "@heroicons/vue/outline";
-import DualMenuPanel from "@components/DualMenuPanel";
+import DualMenuPanel from "@core/components/DualMenuPanel";
 
 export default {
     components: { DualMenuPanel },
