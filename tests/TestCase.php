@@ -24,4 +24,3 @@ class TestCase extends TestbenchTestCase
         ];
     }
 }
-
