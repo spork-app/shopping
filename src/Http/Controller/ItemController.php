@@ -2,8 +2,8 @@
 
 namespace Spork\Shopping\Http\Controller;
 
-use Spork\Shopping\Services\MeijerItemService;
 use Illuminate\Http\Request;
+use Spork\Shopping\Services\MeijerItemService;
 
 class ItemController
 {

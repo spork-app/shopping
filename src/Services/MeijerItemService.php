@@ -3,12 +3,12 @@
 namespace Spork\Shopping\Services;
 
 use App\Models\FeatureList;
-use Spork\Shopping\Jobs\UpsertItem;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Spork\Shopping\Jobs\UpsertItem;
 
 class MeijerItemService
 {
@@ -29,9 +29,10 @@ class MeijerItemService
      */
     public const CART_URL = 'https://www.meijer.com/bin/meijer/cart/userstate';
 
-    protected function getDistanceBetweenPoints($lat1, $lon1, $lat2, $lon2) {
+    protected function getDistanceBetweenPoints($lat1, $lon1, $lat2, $lon2)
+    {
         $theta = $lon1 - $lon2;
-        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
         $dist = acos($dist);
         $dist = rad2deg($dist);
         $miles = $dist * 60 * 1.1515;
@@ -44,7 +45,7 @@ class MeijerItemService
         try {
             $primaryProperty = FeatureList::whereJson('$.settings.is_primary', true)->first();
 
-            $stores = array_map(fn($store) => [
+            $stores = array_map(fn ($store) => [
                 'id' => $store->unitid,
                 'name' => $store->storeShortName,
                 'address' => $store->streetAddress,
@@ -53,14 +54,13 @@ class MeijerItemService
                 'zip' => $store->zip,
                 'latitude' => $store->latitude,
                 'longitude' => $store->longitude,
-                'distance_from_home' => $this->getDistanceBetweenPoints($primaryProperty->latitude, $primaryProperty->longitude, $store->latitude, $store->longitude)
+                'distance_from_home' => $this->getDistanceBetweenPoints($primaryProperty->latitude, $primaryProperty->longitude, $store->latitude, $store->longitude),
             ], json_decode(file_get_contents(resource_path('meijer_stores.json'))));
 
             $primaryStore = collect($stores)->sortBy('distance_from_home')->first()['id'] ?? 257;
         } catch (\Exception $exception) {
             $primaryStore = 257;
         }
-
 
         $response = cache()->remember('meijer-query.'.$itemName.'.'.$page, now()->addHour(), fn () => Http::get(sprintf(self::API_URL, $itemName, $page, $primaryStore))->json());
 
@@ -69,6 +69,7 @@ class MeijerItemService
 
         $formattedData = Collection::make($data)->map(function ($item) use ($primaryStore) {
             dispatch(new UpsertItem($item));
+
             return [
                 'id' => $item['data']['id'],
                 'name' => $item['value'],
@@ -86,14 +87,14 @@ class MeijerItemService
                     ->filter(),
                 'image_url' => $item['data']['image_url'],
                 'is_alcohol' => $item['data']['isAlcohol'],
-                'is_home_delivery_available' => !$item['data']['homeDeliveryNotAvailable'],
+                'is_home_delivery_available' => ! $item['data']['homeDeliveryNotAvailable'],
                 'store' => 'meijer',
                 'count' => 1,
             ];
         })->filter(fn ($item) => $item['is_available_in_local_store']);
 
         return new LengthAwarePaginator($formattedData, $total, 20, $page, [
-            'path' => '/' . request()->path()
+            'path' => '/'.request()->path(),
         ]);
     }
 }

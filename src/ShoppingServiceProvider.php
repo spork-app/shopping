@@ -2,9 +2,9 @@
 
 namespace Spork\Shopping;
 
-use Spork\Core\Spork;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Spork\Core\Spork;
 
 class ShoppingServiceProvider extends ServiceProvider
 {
@@ -13,7 +13,7 @@ class ShoppingServiceProvider extends ServiceProvider
         Spork::addFeature('shopping', 'ShoppingCartIcon', '/shopping', 'tool');
 
         if (config('spork.shopping.enabled')) {
-            Route::prefix('api')->group(__DIR__ . '/../routes/api.php');
+            Route::prefix('api')->group(__DIR__.'/../routes/api.php');
         }
     }
 }
